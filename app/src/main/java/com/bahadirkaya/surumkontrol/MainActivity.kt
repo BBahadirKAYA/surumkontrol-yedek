@@ -8,15 +8,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.bahadirkaya.surumkontrol.ui.theme.SurumKontrolTheme  // ✅ DÜZELTİLDİ
+import com.bahadirkaya.surumkontrol.ui.theme.SurumKontrolTheme
 import okhttp3.*
 import java.io.IOException
+import org.json.JSONObject
+import com.bahadirkaya.surumkontrol.BuildConfig   // ✅ EKLENDİ
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SurumKontrolTheme {  // ✅ DÜZELTİLDİ
+            SurumKontrolTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     SorguSonucuEkrani()
                 }
@@ -27,31 +29,51 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SorguSonucuEkrani() {
-    var sonuc by remember { mutableStateOf("Veri yükleniyor...") }
+    var versionCodeFromServer by remember { mutableStateOf(-1) }
+    var versionName by remember { mutableStateOf("") }
+    var mesaj by remember { mutableStateOf("") }
+    var updateAvailable by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val url = "https://script.google.com/macros/s/AKfycbx66rGZgt-mT69vb9ZEaMjCc696xnfsNmhmVIf2DXw0fYatmLWEbC2HgYPafCEgLkkaAA/exec"
+        val url =  "https://script.google.com/macros/s/AKfycbxSNL58f0LSeiCPJ-5bo5Ror9vgtteTqdw_lT2BZQFCuCMxRwOG4W0L0GWJGpAb3OPKew/exec"
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                sonuc = "Hata: ${e.message}"
+                mesaj = "Hata: ${e.message}"
             }
 
             override fun onResponse(call: Call, response: Response) {
-                sonuc = response.body?.string() ?: "Boş yanıt"
+                val responseString = response.body?.string() ?: ""
+                try {
+                    val json = JSONObject(responseString)
+                    val dataArray = json.getJSONArray("data")
+                    val item = dataArray.getJSONObject(0)
+
+                    versionCodeFromServer = item.getInt("versionCode")
+                    versionName = item.getString("versionName")
+                    mesaj = item.getString("mesaj")
+
+                    val currentVersion = BuildConfig.VERSION_CODE
+                    updateAvailable = versionCodeFromServer > currentVersion
+                } catch (e: Exception) {
+                    mesaj = "JSON ayrıştırma hatası: ${e.message}"
+                }
             }
         })
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "Sunucu Yanıtı:", style = MaterialTheme.typography.titleMedium)
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text("Uygulama Sürüm: ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.titleMedium)
+        Text("Sunucu Sürüm: $versionName", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = sonuc, style = MaterialTheme.typography.bodyLarge)
+        Text("Mesaj: $mesaj", style = MaterialTheme.typography.bodyLarge)
+        Spacer(modifier = Modifier.height(12.dp))
+        if (updateAvailable) {
+            Text("🔔 Yeni güncelleme mevcut!", color = MaterialTheme.colorScheme.primary)
+        } else {
+            Text("Uygulama güncel.", color = MaterialTheme.colorScheme.secondary)
+        }
     }
 }
