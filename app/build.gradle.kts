@@ -12,8 +12,8 @@ android {
         applicationId = "com.bahadirkaya.surumkontrol"
         minSdk = 21
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,15 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true // ← EKLE BUNU
+    }
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val appName = "surumkontrol"
+            val version = versionName
+            val buildType = buildType.name
+            outputImpl.outputFileName = "${appName}_v${version}_${buildType}.apk"
+        }
     }
 }
 
