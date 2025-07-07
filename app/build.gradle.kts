@@ -1,7 +1,9 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.appdistribution")
+    kotlin("android")
+    kotlin("plugin.compose")
 }
 
 android {
@@ -14,10 +16,16 @@ android {
         targetSdk = 36
         versionCode = 3
         versionName = "1.2"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        create("release") {
+            storeFile = file("surumkontrol-key.jks")
+            storePassword = "87888788"
+            keyAlias = "surumkontrolkey"
+            keyPassword = "87888788"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -25,19 +33,24 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release") // 🔑 EKLENDİ
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
-        buildConfig = true // ← EKLE BUNU
+        buildConfig = true
     }
+
     applicationVariants.all {
         outputs.all {
             val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
@@ -47,10 +60,18 @@ android {
             outputImpl.outputFileName = "${appName}_v${version}_${buildType}.apk"
         }
     }
+
+
+}
+
+firebaseAppDistribution {
+    appId = "1:134197709933:android:c703c4856fe3dde0b34364"
+    serviceCredentialsFile = "./.credentials/surumkontrol-service-account.json"
+    releaseNotes = "Sürüm 1.2 yayınlandı"
+    testers = "ebaykaya@gmail.com"
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,7 +81,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("org.json:json:20231013")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.6.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

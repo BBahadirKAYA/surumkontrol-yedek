@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.bahadirkaya.surumkontrol" />
+                  <option name="mobileSdkAppId" value="1:134197709933:android:c703c4856fe3dde0b34364" />
+                  <option name="projectId" value="surumkontrol-e1166" />
+                  <option name="projectNumber" value="134197709933" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "134197709933",
+    "project_id": "surumkontrol-e1166",
+    "storage_bucket": "surumkontrol-e1166.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134197709933:android:c703c4856fe3dde0b34364",
+        "android_client_info": {
+          "package_name": "com.bahadirkaya.surumkontrol"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7BpT7bxz3ihVnEulfb4ZBB9yOGkQKOA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
